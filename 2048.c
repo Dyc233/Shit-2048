@@ -27,10 +27,10 @@ int main(void) {
 			char key = _getch();
 			moveFlag = move(key);
 		}
-		if (!set2or4()) break;
-
 		score_ = score();
 		step_++;
+
+		if (!set2or4()) break;
 		system("cls");
 		printBoard();
 	}
