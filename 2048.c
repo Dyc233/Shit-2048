@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <conio.h>
 #include <time.h>
+#include <Windows.h>
 
 int set2or4();
 //int cantMove();
@@ -18,7 +19,6 @@ int twoFour[5] = { 2,2,2,2,4 };
 int score_, step_ = 0;
 
 int main(void) {
-	system("color F8");
 	set2or4();
 	printBoard();
 	while (1) {
@@ -29,8 +29,8 @@ int main(void) {
 		}
 		score_ = score();
 		step_++;
-
 		if (!set2or4()) break;
+
 		system("cls");
 		printBoard();
 	}
@@ -221,11 +221,64 @@ int score(void) {
 
 void printBoard(void) {
 	int x, y;
+
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	for (y = 0; y < 4; y++) {
 		for (x = 0; x < 4; x++) {
-			printf("%-8d", board[y][x]);
+			switch (board[y][x]) {
+				case 0:
+					SetConsoleTextAttribute(hConsole,240);
+					break;
+				case 2:
+					SetConsoleTextAttribute(hConsole, 112);
+					break;
+				case 4:
+					SetConsoleTextAttribute(hConsole, 128);
+					break;
+				case 8:
+					SetConsoleTextAttribute(hConsole, 224);
+					break;
+				case 16:
+					SetConsoleTextAttribute(hConsole, 96);
+					break;
+				case 32:
+					SetConsoleTextAttribute(hConsole, 176);
+					break;
+				case 64:
+					SetConsoleTextAttribute(hConsole, 48);
+					break;
+				case 128:
+					SetConsoleTextAttribute(hConsole, 144);
+					break;
+				case 256:
+					SetConsoleTextAttribute(hConsole, 16);
+					break;
+				case 512:
+					SetConsoleTextAttribute(hConsole, 160);
+					break;
+				case 1024:
+					SetConsoleTextAttribute(hConsole, 32);
+					break;
+				case 2048:
+					SetConsoleTextAttribute(hConsole, 192);
+					break;
+				case 4096:
+					SetConsoleTextAttribute(hConsole, 64);
+					break;
+				case 8192:
+					SetConsoleTextAttribute(hConsole, 208);
+					break;
+				case 16384:
+					SetConsoleTextAttribute(hConsole, 80);
+					break;
+				case 32768:
+					SetConsoleTextAttribute(hConsole, 15);
+					break;
+			}
+			printf("%-6d", board[y][x]);
 		}
-		printf("\n\n");
+		printf("\n");
 	}
-	printf("\n\nSTEP %-16dSCORE %-8d", step_, score_);
+	SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+	printf("\n\nSTEP %-12dSCORE %-8d", step_, score_);
 }
