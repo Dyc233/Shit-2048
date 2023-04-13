@@ -280,5 +280,5 @@ void printBoard(void) {
 		printf("\n");
 	}
 	SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-	printf("\n\nSTEP %-12dSCORE %-8d", step_, score_);
+	printf("\nSTEP %-12dSCORE %-8d", step_, score_);
 }
