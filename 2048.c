@@ -1,11 +1,13 @@
+//各功能模块初步完成。主体逻辑还需完善。奖励机制待完成。
+//考虑加入游戏菜单功能及HIGH SCORE记录
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
 #include <time.h>
 #include <Windows.h>
 
-int set2or4();
-//int cantMove();
+int cantMove();
+int emptyCount();
 int move(char);
 int score();
 int up();
@@ -13,55 +15,63 @@ int down();
 int left();
 int right();
 void printBoard();
+void end();
 
 int board[4][4] = {};
+int empty[16][2] = {};
 int twoFour[5] = { 2,2,2,2,4 };
 int score_, step_ = 0;
 
 int main(void) {
-	set2or4();
+	int emp = 0;
+	board[0][0] = 2;
 	printBoard();
+	printf("\n\n      2048小游戏V1.0    ");
+	printf("\n使用wasd控制上下左右的移动");
+	printf("\n达到1000分数可获取随机奖励");
+	printf("\n合成出2048可约作者线下PVP ");
+	printf("\n              BY Anko_6go ");
+	printf("\n                2023.4.14 ");
+
 	while (1) {
 		int moveFlag = 0;
 		while (!moveFlag) {
 			char key = _getch();
 			moveFlag = move(key);
 		}
-		score_ = score();
 		step_++;
-		if (!set2or4()) break;
+
+		emp = emptyCount();
+		if (!emp)
+			if (cantMove())
+				break;
+		srand((unsigned int)time(NULL));
+		int r = rand() % emp - 1,_r = rand() % 5;
+		int _y = empty[r][0], _x = empty[r][1];
+		board[_y][_x] = twoFour[_r];
+		score_ = score();
 
 		system("cls");
 		printBoard();
 	}
-
-	printf("\nEND");
+	end();
 
 	return 0;
 }
 
-int set2or4(void) {
-	int FLAG = 0;
+int emptyCount(void) {
+	int i = 0;
 	for (int y = 0; y < 4; y++) {
 		for (int x = 0; x < 4; x++) {
-			if (!board[y][x])
-				FLAG = 1;
+			if (!board[y][x]) {
+				empty[i][0] = y;
+				empty[i][1] = x;
+				i++;
+			}
 		}
 	}
-	if (!FLAG) return 0;
 
-	int _x, _y, r;
-	while (1) {
-		srand((unsigned int)time(NULL));
-		_x = rand() % 4;
-		_y = rand() % 4;
-		r = rand() % 5;
-		if (board[_y][_x] == 0) {
-			board[_y][_x] = twoFour[r];
-			return 1;
-		}
-		else continue;
-	}
+	return i;
 }
 
 int move(char dr) {
@@ -77,6 +87,22 @@ int move(char dr) {
 	default:
 		return 0;
 	}
+}
+
+int cantMove(void) {
+	for (int i = 0; i < 4; i++){
+		int t1 = 0, t2 = 1;
+		while (t2 <= 3){
+			if (board[i][t1] == board[i][t2] || board[t1][i] == board[t2][i]){
+				return 0;
+			}
+			else{
+				t1++;
+				t2++;
+			}
+		}
+	}
+	return 1;
 }
 
 int right(void) {
@@ -280,5 +306,11 @@ void printBoard(void) {
 		printf("\n");
 	}
 	SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-	printf("\nSTEP %-12dSCORE %-8d", step_, score_);
+	printf("\nSTEP %-10dSCORE %-8d", step_, score_);
+}
+
+void end(void) {
+	system("cls");
+	printBoard();
+	printf("\n\n       GAME OVER!");
 }
