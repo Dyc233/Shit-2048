@@ -1,19 +1,20 @@
-//各功能模块初步完成。主体逻辑还需完善。奖励机制待完成。
-//考虑加入游戏菜单功能及HIGH SCORE记录
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
 #include <time.h>
 #include <Windows.h>
+#include<Mmsystem.h>
+#pragma comment(lib,"winmm.lib")
+#define PICS 11
 
 int cantMove();
 int emptyCount();
 int move(char);
-int score();
 int up();
 int down();
 int left();
 int right();
+void playSound(int);
 void printBoard();
 void end();
 
@@ -23,38 +24,43 @@ int twoFour[5] = { 2,2,2,2,4 };
 int score_, step_ = 0;
 
 int main(void) {
+	//游戏预加载
 	int emp = 0;
 	board[0][0] = 2;
 	printBoard();
 	printf("\n\n      2048小游戏V1.0    ");
 	printf("\n使用wasd控制上下左右的移动");
-	printf("\n达到1000分数可获取随机奖励");
+	printf("\n达到5000分数可获取随机奖励");
 	printf("\n合成出2048可约作者线下PVP ");
 	printf("\n              BY Anko_6go ");
 	printf("\n                2023.4.14 ");
 
+	//游戏运行逻辑
 	while (1) {
+		if (!emptyCount())
+			if (cantMove())
+				break;
+
 		int moveFlag = 0;
 		while (!moveFlag) {
 			char key = _getch();
 			moveFlag = move(key);
 		}
+
+		srand((unsigned int)time(NULL));
+		playSound(rand()%9+1);
 		step_++;
 
 		emp = emptyCount();
-		if (!emp)
-			if (cantMove())
-				break;
-		srand((unsigned int)time(NULL));
-		int r = rand() % emp - 1,_r = rand() % 5;
+		int r = rand() % emp, _r = rand() % 5;
 		int _y = empty[r][0], _x = empty[r][1];
 		board[_y][_x] = twoFour[_r];
-		score_ = score();
 
 		system("cls");
 		printBoard();
 	}
 	end();
+	system("pause");
 
 	return 0;
 }
@@ -127,6 +133,7 @@ int right(void) {
 						board[y][x] = 0;
 						FLAG = 1;
 						F = 1;
+						score_ += board[y][x + 1];
 					}
 					else continue;
 				}
@@ -159,6 +166,7 @@ int left(void) {
 						board[y][x] = 0;
 						FLAG = 1;
 						F = 1;
+						score_ += board[y][x - 1];
 					}
 					else continue;
 				}
@@ -191,6 +199,7 @@ int up(void) {
 						board[y][x] = 0;
 						FLAG = 1;
 						F = 1;
+						score_ += board[y-1][x];
 					}
 					else continue;
 				}
@@ -223,6 +232,7 @@ int down(void) {
 						board[y][x] = 0;
 						FLAG = 1;
 						F = 1;
+						score_ += board[y + 1][x];
 					}
 					else continue;
 				}
@@ -231,18 +241,6 @@ int down(void) {
 	}
 
 	return F;
-}
-
-int score(void) {
-	int s = 0;
-	int x, y;
-	for (y = 0; y < 4; y++) {
-		for (x = 0; x < 4; x++) {
-			s += board[y][x];
-		}
-	}
-
-	return s;
 }
 
 void printBoard(void) {
@@ -309,8 +307,57 @@ void printBoard(void) {
 	printf("\nSTEP %-10dSCORE %-8d", step_, score_);
 }
 
+void playSound(int i) {
+	switch (i) {
+		case 1:
+			PlaySound(TEXT(".\\sounds\\s1.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			break;
+		case 2:
+			PlaySound(TEXT(".\\sounds\\s2.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			break;		
+		case 3:
+			PlaySound(TEXT(".\\sounds\\s3.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			break;
+		case 4:
+			PlaySound(TEXT(".\\sounds\\s4.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			break;
+		case 5:
+			PlaySound(TEXT(".\\sounds\\s5.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			break;
+		case 6:
+			PlaySound(TEXT(".\\sounds\\s6.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			break;
+		case 7:
+			PlaySound(TEXT(".\\sounds\\s7.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			break;
+		case 8:
+			PlaySound(TEXT(".\\sounds\\s8.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			break;
+		case 9:
+			PlaySound(TEXT(".\\sounds\\s9.wav"), NULL, SND_FILENAME | SND_ASYNC);
+			break;
+	}
+}
+
 void end(void) {
 	system("cls");
 	printBoard();
-	printf("\n\n       GAME OVER!");
+	printf("\n\n       GAME OVER!\n");
+	if (score_ >= 5000) {
+		int ch;
+		printf("\n恭喜你解锁了高分奖励！");
+		printf("\n请在确认周围没人之后，按F获得你的奖励\n或者按其他任意键退出游戏。");
+		while (ch = _getch()) {
+			if (ch == 'f') {
+				srand((unsigned int)time(NULL));
+				char pic[20];
+				int picN = rand() % PICS + 1;
+				sprintf_s(pic, ".\\pictures\\p%d.jpg", picN);
+				system(pic);
+				printf("\n什么，不够涩？按F再换一张！");
+				continue;
+			}
+			else break;
+		}
+	}
 }
